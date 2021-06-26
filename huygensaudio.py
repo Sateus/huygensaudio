@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
-
 
 import numpy as np
 import soundfile as sf
@@ -13,15 +11,10 @@ import sympy
 
 # Import der Audiodatei als Array
 
-# In[2]:
-
-
 y, sr = sf.read("Bach.wav")
 
 
 # Konstanten
-
-# In[3]:
 
 
 #Dimension
@@ -39,16 +32,12 @@ r=10
 
 # Wandelt den dreidimensionalen Schalldruck in f(t) um
 
-# In[4]:
-
 
 def entko(h):
     return h*4*np.pi*r
 
 
 # Wandelt wieder in den Druck in der entsprechenden Dimension zurück
-
-# In[5]:
 
 
 def verko(h):
@@ -64,8 +53,6 @@ def verko(h):
 
 # Bestimmt die numerische Ableitung d-ter Ordnung
 
-# In[6]:
-
 
 def abl(self, d):
     eit=self
@@ -75,8 +62,6 @@ def abl(self, d):
 
 
 # Faltungsfunktion
-
-# In[7]:
 
 
 def falt(self, theta, d):
@@ -100,16 +85,12 @@ def falt(self, theta, d):
 
 # Effektivwert
 
-# In[8]:
-
 
 def effw(self):
     return np.sqrt(np.mean(np.square(self)))
 
 
 # ### Dimensionenabhängige Fälle
-
-# In[9]:
 
 
 if n==1:
@@ -130,9 +111,6 @@ if n==1:
             lsg[i*f:(i+1)*f,1]=lsg[i*f:(i+1)*f,1]-np.mean(lsg[i*f:(i+1)*f,1])
 
 
-# In[14]:
-
-
 if n%2==0:
     theta=np.empty([len(y)])  #Erstellt den zu f(t) zugehörige Faltungskern für n%2=0
     for i in range(0, len(theta)):
@@ -142,14 +120,9 @@ if n%2==0:
     lsg=falt(y,theta, n-2)
 
 
-# In[10]:
-
-
 if n==3:
     lsg=y
 
-
-# In[54]:
 
 
 if n%2!=0 and n>3:
@@ -167,16 +140,12 @@ if n%2!=0 and n>3:
 
 # Exportiert und normiert die resultierende Lösung
 
-# In[32]:
-
 
 norm=lsg/np.absolute(lsg).max()*0.99  #normalisiert die Lösung
 sf.write('1d.wav', norm, sr)  #erstellt eine neue Audiodatei im Ordner
 
 
 # Plot der Lösung
-
-# In[10]:
 
 
 t = np.arange(0, len(lsg)/sr, 1/sr)
@@ -188,8 +157,6 @@ plt.show()  #show plot
 
 # Plot der ursprünglichen Datei
 
-# In[11]:
-
 
 t = np.arange(0, len(y)/sr, 1/sr)
 plt.plot(t,y)  #plot
@@ -200,7 +167,6 @@ plt.show()  #show plot
 
 # Differenz der Schalldruckpegel in dB
 
-# In[12]:
 
 
 print(20*np.log10(effw(lsg)/effw(y)))

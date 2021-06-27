@@ -32,7 +32,7 @@ channel = y.ndim
 # Geschwindigkeiten alle in m/s
 v = 343  # Schalllgeschwindigkeit in Luft
 
-# Abstand Quelle und Emfänger zu Beginn in m
+# Abstand Quelle und Empfänger zu Beginn in m
 r = 10
 
 

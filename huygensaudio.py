@@ -187,10 +187,10 @@ sf.write('1d.wav', norm, sr)  # erstellt eine neue Audiodatei im Ordner
 
 
 t = np.arange(0, len(lsg)/sr, 1/sr)
-plt.plot(t, lsg)  # plot
+plt.plot(t, lsg) 
 plt.xlabel('Zeit in s')
 plt.ylabel('Amplitude')
-plt.show()  # show plot
+plt.show() 
 
 
 # Plot der ursprünglichen Datei
@@ -199,10 +199,10 @@ plt.show()  # show plot
 
 
 t = np.arange(0, len(y)/sr, 1/sr)
-plt.plot(t, y)  # plot
+plt.plot(t, y) 
 plt.xlabel('Zeit in s')
 plt.ylabel('Amplitude')
-plt.show()  # show plot
+plt.show() 
 
 
 # Differenz der Schalldruckpegel in dB

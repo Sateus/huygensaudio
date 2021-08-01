@@ -67,10 +67,11 @@ def verko(h):
 
 
 def abl(self, d):
-    eit = self
-    for i in range(0, d):
-        eit = np.gradient(eit, 1/sr, edge_order=2)
-    return eit
+    if(d > 0):
+        eit = np.gradient(self, 1/sr)
+        return abl(eit[1:len(eit)-1], d-1)
+    else:
+        return self
 
 
 # Faltungsfunktion
@@ -79,23 +80,21 @@ def abl(self, d):
 
 
 def falt(self, theta, d):
-
     if channel == 1:
-        # Diskrete Faltung mit Ableitung
-        zw11 = signal.convolve(abl(entko(self), d), theta)
-        # Die diskrete Faltung wird als Grenzfall der Faltung behandelt
-        zw21 = zw11[:len(self)]/sr
+        zw01 = abl(entko(self), d)  # Ableitung
+        zw11 = signal.convolve(zw01, theta)  # Faltung
+        zw21 = zw11[:len(zw01)]/sr
         lsg = verko(zw21)
-
     else:  # Wie im Mono-Fall, nur wird die Faltung auf beide Kanäle angewandt
-        zw11 = signal.convolve(abl(entko(self[:, 0]), d), theta)
-        zw12 = signal.convolve(abl(entko(self[:, 1]), d), theta)
-        zw21 = zw11[:len(self)]/sr
-        zw22 = zw12[:len(self)]/sr
+        zw01 = abl(entko(self[:, 0]), d)
+        zw02 = abl(entko(self[:, 1]), d)
+        zw11 = signal.convolve(zw01, theta)
+        zw12 = signal.convolve(zw02, theta)
+        zw21 = zw11[:len(zw01)]/sr
+        zw22 = zw12[:len(zw02)]/sr
         lsg = np.empty([len(zw21), 2])
         lsg[:, 0] = verko(zw21)
         lsg[:, 1] = verko(zw22)
-
     return lsg
 
 
@@ -108,7 +107,7 @@ def effw(self):
     return np.sqrt(np.mean(np.square(self)))
 
 
-# ### Dimensionenabhängige Fälle
+# ### Dimensionsabhängige Fälle
 
 # In[9]:
 
@@ -116,24 +115,37 @@ def effw(self):
 if n == 1:
     # Erstellt den zu f(t) zugehörigen Faltungskern für n=1
     theta = np.ones(len(y)*2)
-
     lsg = falt(y, theta, 0)
 
-    # Mittelt die Werte des eindimensionalen Falls
+    # gleitende Mittelung des Arrays
     f = 5000  # Länge der Intervalle in die die Datei aufgeteilt wird
-    # Anzahl an Intervallen in die die Datei aufgeteilt wird
-    h = int(len(lsg)/f)
-    if len(lsg) % f != 0:
-        h += 1
+    h = int(len(y)/f)  # Anzahl an Intervallen in die die Datei aufgeteilt wird
+    gleitwert = 2  # Anzahl an Zwischenintervallen in
+    #  denen zusätzlich gemittelt wird
+    if len(y) % f != 0:
+        h += 1  # rundet h auf, falls das Array nicht
+        # vollständig abgedeckt wird
     if channel == 1:
         for i in range(0, h):
-            lsg[i*f:(i+1)*f] = lsg[i*f:(i+1)*f]-np.mean(lsg[i*f:(i+1)*f])
+            for j in range(1, gleitwert+1):
+                if int((i+1/j-1)*f) > 0:
+                    lsg[int((i+1/j-1)*f):int((i+1/j)*f)
+                        ] -= np.mean(lsg[int((i+1/j-1)*f):int((i+1/j)*f)])
+                else:
+                    lsg[0:int((i+1/j)*f)] -= np.mean(lsg[0:int((i+1/j)*f)])
     else:
         for i in range(0, h):
-            lsg[i*f:(i+1)*f, 0] = lsg[i*f:(i+1)*f, 0] - \
-                np.mean(lsg[i*f:(i+1)*f, 0])
-            lsg[i*f:(i+1)*f, 1] = lsg[i*f:(i+1)*f, 1] - \
-                np.mean(lsg[i*f:(i+1)*f, 1])
+            for j in range(1, gleitwert+1):
+                if int((i+1/j-1)*f) > 0:
+                    lsg[int((i+1/j-1)*f):int((i+1/j)*f),
+                        0] -= np.mean(lsg[int((i+1/j-1)*f):int((i+1/j)*f), 0])
+                    lsg[int((i+1/j-1)*f):int((i+1/j)*f),
+                        1] -= np.mean(lsg[int((i+1/j-1)*f):int((i+1/j)*f), 1])
+                else:
+                    lsg[0:int((i+1/j)*f), 0] -= np.mean(
+                        lsg[0:int((i+1/j)*f), 0])
+                    lsg[0:int((i+1/j)*f), 1] -= np.mean(
+                        lsg[0:int((i+1/j)*f), 1])
 
 
 # In[10]:
@@ -178,7 +190,7 @@ if n % 2 != 0 and n > 3:
 
 
 norm = lsg/np.absolute(lsg).max()*0.99  # normalisiert die Lösung
-sf.write('1d.wav', norm, sr)  # erstellt eine neue Audiodatei im Ordner
+sf.write('4d.wav', norm, sr)  # erstellt eine neue Audiodatei im Ordner
 
 
 # Plot der Lösung

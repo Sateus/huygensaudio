@@ -24,7 +24,7 @@ y, sr = sf.read("Bach.wav")
 
 
 # Dimension
-n = 1
+n = 4
 
 # Anzahl der Channel der Sounddatei, erwartet wird 1 oder 2
 channel = y.ndim

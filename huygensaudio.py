@@ -117,13 +117,13 @@ if n == 1:
     theta = np.ones(len(y)*2)
     lsg = falt(y, theta, 0)
 
-    # gleitende Mittelung des Arrays
+    # Gleitende Mittelung des Arrays
     f = 5000  # Länge der Intervalle in die die Datei aufgeteilt wird
     h = int(len(y)/f)  # Anzahl an Intervallen in die die Datei aufgeteilt wird
     gleitwert = 2  # Anzahl an Zwischenintervallen in
     #  denen zusätzlich gemittelt wird
     if len(y) % f != 0:
-        h += 1  # rundet h auf, falls das Array nicht
+        h += 1  # Rundet h auf, falls das Array nicht
         # vollständig abgedeckt wird
     if channel == 1:
         for i in range(0, h):
@@ -189,8 +189,8 @@ if n % 2 != 0 and n > 3:
 # In[13]:
 
 
-norm = lsg/np.absolute(lsg).max()*0.99  # normalisiert die Lösung
-sf.write('4d.wav', norm, sr)  # erstellt eine neue Audiodatei im Ordner
+norm = lsg/np.absolute(lsg).max()*0.99  # Normalisiert die Lösung
+sf.write('4d.wav', norm, sr)  # Erstellt eine neue Audiodatei im Ordner
 
 
 # Plot der Lösung
